@@ -1,66 +1,64 @@
 # Threat-Detection-and-Safety-Analyzer
 
-Overview of the project
-This project is a simple command-line based safety analysis system developed using Python.
-It is designed to detect and analyze different types of realnworld risks such as:
-- Threat detection (missile, drone, etc.)
-- Forest fire risk
-- Air quality condition
-- Water quality safety
+Welcome to **"Threat Detection & Safety Analyzer"** System!  
+Think of this as your **digital safety assistant**. This Python program runs entirely in your terminal and helps you assess various environmental and safety risks—quickly, safely, and without any fancy databases or external tools.
 
-The system takes input from the user, processes it using basic logic, and provides a risk level along with some safety advice.
+It’s perfect for learning how to combine basic programming, scoring logic, and simple ML-inspired classification into a real world application.
 
 ---
 
-Purpose of the Project
-In everyday life, we often face situations where we are not sure how risky something is. For example:
-- Is the air quality safe?
-- Is there a chance of fire in a forest area?
-- How dangerous is a moving object?
+ Key Features
 
-So I decided to build a simple tool that can help in understanding these situations in an easy way.
+This system makes safety analysis **simple and interactive**:
 
----
-
-Central Idea
-The main goal of this project is to:
-- Analyze different safety conditions
-- Classify them into risk levels (Low, Medium, High)
-- Provide basic guidance to the user
+- Threat Detection: Check nearby objects like drones, missiles, or unusual flying objects for risk levels.  
+- Forest Fire Risk: Evaluate fire risk using temperature, humidity, wind speed, and vegetation conditions.  
+- Air Quality Analysis: Analyze PM2.5, PM10, and CO levels to see if the air is safe.  
+- Water Quality Check: Test water using pH, turbidity, and bacteria levels for safety.  
+- Safety Recommendations: For each risk, the system suggests practical actions like taking shelter or avoiding the area.  
+- User-Friendly Menu: Navigate options easily, with the ability to type `exit` anytime.  
 
 ---
 
-Working of the System
-The program follows a simple approach:
+ Technology & Concepts Used
 
-1. It asks the user to select a type of detection
-2. It takes required inputs (like temperature, speed, pollution levels, etc.)
-3. It assigns scores to these inputs
-4. Based on the total score, it classifies the result into levels
-5. It displays the result along with safety advice
+| Technology/Concept | Purpose |
+|-------------------|---------|
+| Python 3          | Core programming language, easy to run in terminal |
+| Dictionaries      | Store inputs, scores, and risk levels for each threat type |
+| Conditional Logic | Determine risk classification (Low / Medium / High) |
+| Loops & Functions | Modular and reusable program structure |
+| Scoring System    | Inspired by ML to calculate risk scores from inputs |
 
----
-
-Concept Used
-This project uses basic programming and Machine Learning inspired concepts:
-
-- Python functions
-- Conditional statements (if-else)
-- Loops
-- User input handling
-- Basic Machine Learning logic:
-  - scoring system (feature weighting)
-  - classification using thresholds
-
+> Note: No external libraries are required. Everything is implemented using **core Python**.
 
 ---
 
-Features of the Project
-- Multiple detection modules in one program
-- Simple and interactive menu system
-- Works completely in terminal
-- Gives safety suggestions based on input
-- User can exit anytime by typing `exit`
+ How It Works?
+
+1. Start the Program: The menu displays options:  
+   - Threat Detection  
+   - Forest Fire Risk  
+   - Air Quality  
+   - Water Quality  
+   - Exit
+2. Choose an Option: The program will ask you for relevant inputs.  
+3. Inputs are Scored: Each parameter is given a score based on its severity.  
+4. Risk Level is Classified: Based on the total score, the system assigns Low, Medium, or High risk.  
+5. Safety Advice: The program provides actionable guidance for each risk.  
+6. Exit Anytime: Type `exit` at any point to quit the program safely.
 
 ---
+How to Run?
+
+1. **Download the Code:** Save it as `main.py` on your computer.  
+2. **Open Terminal/Command Prompt:** Navigate to the folder containing the file.  
+3. **Run the Program:**
+4. Follow the menu prompts and enter values as requested.  
+5. Type `exit` to leave at any time.
+
+---
+
+
+
 
