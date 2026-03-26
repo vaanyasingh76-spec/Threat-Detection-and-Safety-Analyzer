@@ -7,7 +7,7 @@ No fancy databases or external tools—just pure Python logic running right in y
 
 ---
 
- Features
+## Features
 
 Here’s what this program can do for you:
 
@@ -20,7 +20,7 @@ Here’s what this program can do for you:
 
 ---
 
-Technology & Concepts
+## Technology & Concepts
 
 | Concept | Usage |
 |---------|-------|
@@ -34,7 +34,7 @@ Technology & Concepts
 
 ---
 
- How It Works
+## How to Run?
 
 1. When you start the program, a **menu** appears with all detection options:  
    - Threat Detection  
@@ -50,15 +50,24 @@ Technology & Concepts
 7. Type `exit` any time to quit the program.
 
 ---
- How to Run
+## How it Works?
 
-1. **Download the Code:** Save it as `main.py` on your system.  
-2. **Open Terminal / Command Prompt** and navigate to the folder containing `main.py`.  
-3. **Run the Program** with:
-4. Follow the prompts and input data as requested.  
-5. Use the `exit` option whenever you want to leave.
+1. The system takes environmental or situational inputs from the user
+2. It calculates a risk score using predefined formulas
+Based on thresholds, it classifies risk into:
+ - Low
+ - Medium
+ - High
+3. Provides safety recommendations accordingly  
 
 ---
+## OUTPUT 
+
+![WhatsApp Image 2026-03-26 at 8 11 03 PM](https://github.com/user-attachments/assets/4485520b-8277-4895-aa65-ab73b3e0df7a)
+
+
+
+
 
 
 
