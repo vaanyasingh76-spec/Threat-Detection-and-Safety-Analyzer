@@ -62,6 +62,7 @@ Based on thresholds, it classifies risk into:
 
 ---
 ## OUTPUT 
+<img width="945" height="811" alt="image" src="https://github.com/user-attachments/assets/599dadc8-2331-4b13-b591-f17c1f72f5e1" />
 
 
 
