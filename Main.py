@@ -3,170 +3,211 @@
 # ========================================
 
 import random
+import math
+
+history = []
 
 
-threat_objects = ['Missile', 'Drone', 'Rocket', 'Balloon', 'Firework', 'UAV', 'Grenade', 'Debris', 'Satellite']
-veg_levels = ['Low', 'Medium', 'High']
+def distance(p1, p2):
+    total = 0
+    for i in range(len(p1)):
+        total += (p1[i] - p2[i]) ** 2
+    return math.sqrt(total)
 
 
-def get_input(prompt, valid=None, cast=str):
-    while True:
-        user_val = input(prompt)
-        if user_val.lower() == 'exit':
-            return 'exit'
-        if valid and user_val not in valid:
-            print("Invalid input. Try again.")
-            continue
-        if cast != str:
-            try:
-                return cast(user_val)
-            except ValueError:
-                print("Please enter a valid value.")
-                continue
-        return user_val
+def knn_predict(train_X, train_y, new_point, k=5):
+    distances = []
 
-def classify(score, thresholds):
-    for level, limit in thresholds:
-        if score >= limit:
-            return level
-    return 'Unknown'
+    for i in range(len(train_X)):
+        d = distance(train_X[i], new_point)
+        distances.append((d, train_y[i]))
 
-def give_advice(level, advice_dict):
-    return random.choice(advice_dict[level])
+    
+    distances.sort(key=lambda x: x[0])
+    neighbors = distances[:k]
 
-def show_result(title, level, value=None, unit=None, advice=None):
-    print("\n" + "-"*45)
+
+    votes = {}
+    for _, label in neighbors:
+        votes[label] = votes.get(label, 0) + 1
+
+    # return label with max votes
+    return max(votes, key=votes.get)
+
+
+
+def make_threat_data():
+    X, y = [], []
+
+    for _ in range(200):
+        obj = random.randint(1, 9)
+        size = random.randint(1, 3)
+        distance_val = random.randint(50, 1000)
+        speed = random.randint(10, 800)
+
+        score = obj + size + max(0, 1000 - distance_val)/100 + speed/50
+
+        if score >= 15:
+            label = 2
+        elif score >= 8:
+            label = 1
+        else:
+            label = 0
+
+        X.append([obj, size, distance_val, speed])
+        y.append(label)
+
+    return X, y
+
+
+def make_fire_data():
+    X, y = [], []
+
+    for _ in range(200):
+        temp = random.randint(10, 50)
+        humidity = random.randint(10, 100)
+        wind = random.randint(0, 100)
+        veg = random.randint(1, 3)
+
+        score = temp/5 + wind/10 + veg - humidity/10
+
+        if score >= 15:
+            label = 2
+        elif score >= 8:
+            label = 1
+        else:
+            label = 0
+
+        X.append([temp, humidity, wind, veg])
+        y.append(label)
+
+    return X, y
+
+
+
+print("Preparing data...")
+
+threat_X, threat_y = make_threat_data()
+fire_X, fire_y = make_fire_data()
+
+print("System ready ✔")
+
+
+def show_result(title, level, confidence, advice):
+    print("\n" + "-"*40)
     print(f"{title} RESULT")
-    print("-"*45)
-    if value is not None:
-        print(f"Level: {level}")
-        print(f"Score: {round(value,1)}{unit if unit else ''}")
-    else:
-        print(f"Level: {level}")
-    print(f"Advice: {advice}")
-    print("-"*45 + "\n")
+    print("-"*40)
+    print(f"Risk Level : {level}")
+    print(f"Confidence : {round(confidence*100, 2)}%")
+    print(f"Advice     : {advice}")
+    print("-"*40 + "\n")
 
-# ---------- Detection Functions ----------
-def threat_detection():
+def get_confidence(train_X, train_y, new_point, k=5):
+    distances = []
+
+    for i in range(len(train_X)):
+        d = distance(train_X[i], new_point)
+        distances.append((d, train_y[i]))
+
+    distances.sort(key=lambda x: x[0])
+    neighbors = distances[:k]
+
+    votes = {}
+    for _, label in neighbors:
+        votes[label] = votes.get(label, 0) + 1
+
+    max_votes = max(votes.values())
+    return max_votes / k
+
+
+def detect_threat():
     print("\n--- Threat Detection ---")
-    obj = get_input(f"Enter object {threat_objects}: ", threat_objects)
-    if obj == 'exit': return
-    distance = get_input("Distance (m): ", cast=int)
-    if distance == 'exit': return
-    speed = get_input("Speed (km/h): ", cast=int)
-    if speed == 'exit': return
-    size = get_input("Size (Small/Medium/Large): ", ['Small','Medium','Large'])
-    if size == 'exit': return
 
-    score = threat_objects.index(obj) + 1
-    score += {'Small':1,'Medium':2,'Large':3}[size]
-    score += max(0, 1000 - distance)/100
-    score += speed/50
+    obj = int(input("Object type (1-9): "))
+    size = int(input("Size (1=Small, 2=Medium, 3=Large): "))
+    distance_val = int(input("Distance (m): "))
+    speed = int(input("Speed (km/h): "))
 
-    level = classify(score, [('High',15),('Medium',8),('Low',0)])
-    impact = min(10, score/2)
+    new_point = [obj, size, distance_val, speed]
 
-    advice_dict = {
-        'High': ["Take cover immediately.", "Call authorities!"],
-        'Medium': ["Stay indoors.", "Be cautious."],
-        'Low': ["Minor threat.", "Just watch surroundings."]
-    }
+    pred = knn_predict(threat_X, threat_y, new_point)
+    confidence = get_confidence(threat_X, threat_y, new_point)
 
-    show_result("Threat", level, impact, "/10", give_advice(level, advice_dict))
+    levels = ["Low", "Medium", "High"]
+    advice = [
+        "Nothing serious, just stay aware.",
+        "Stay alert, something seems unusual.",
+        "Danger detected! Take cover immediately."
+    ]
 
-def forest_fire_detection():
-    print("\n--- Forest Fire Detection ---")
-    temp = get_input("Temperature (°C): ", cast=int)
-    if temp == 'exit': return
-    humidity = get_input("Humidity (%): ", cast=int)
-    if humidity == 'exit': return
-    wind = get_input("Wind speed (km/h): ", cast=int)
-    if wind == 'exit': return
-    veg = get_input("Vegetation (Low/Medium/High): ", veg_levels)
-    if veg == 'exit': return
+    level = levels[pred]
 
-    score = temp/5 + wind/10
-    score += {'Low':1,'Medium':2,'High':3}[veg]
-    score -= humidity/10
+    history.append(("Threat", level))
+    show_result("Threat", level, confidence, advice[pred])
 
-    level = classify(score, [('High',15),('Medium',8),('Low',0)])
-    severity = min(10, score/1.5)
 
-    advice_dict = {
-        'High': ["Evacuate area!", "Fire danger high."],
-        'Medium': ["Stay alert.", "Possible fire risk."],
-        'Low': ["Looks safe.", "Still keep watch."]
-    }
 
-    show_result("Forest Fire", level, severity, "/10", give_advice(level, advice_dict))
+def detect_fire():
+    print("\n--- Forest Fire Check ---")
 
-def air_quality_detection():
-    print("\n--- Air Quality ---")
-    pm25 = get_input("PM2.5 (µg/m³): ", cast=float)
-    if pm25 == 'exit': return
-    pm10 = get_input("PM10 (µg/m³): ", cast=float)
-    if pm10 == 'exit': return
-    co = get_input("CO (ppm): ", cast=float)
-    if co == 'exit': return
+    temp = int(input("Temperature (°C): "))
+    humidity = int(input("Humidity (%): "))
+    wind = int(input("Wind speed (km/h): "))
+    veg = int(input("Vegetation (1-3): "))
 
-    score = pm25/12 + pm10/50 + co/9
-    level = classify(score, [('Poor',10),('Moderate',5),('Good',0)])
+    new_point = [temp, humidity, wind, veg]
 
-    advice_dict = {
-        'Poor': ["Avoid going outside.", "Use masks."],
-        'Moderate': ["Limit exposure.", "Be cautious."],
-        'Good': ["Air is clean.", "Enjoy outside."]
-    }
+    pred = knn_predict(fire_X, fire_y, new_point)
+    confidence = get_confidence(fire_X, fire_y, new_point)
 
-    show_result("Air Quality", level, None, None, give_advice(level, advice_dict))
+    levels = ["Low", "Medium", "High"]
+    advice = [
+        "Looks safe for now.",
+        "Be cautious, risk is increasing.",
+        "High fire risk! Consider evacuation."
+    ]
 
-def water_detection():
-    print("\n--- Water Check ---")
-    ph = get_input("pH value: ", cast=float)
-    if ph == 'exit': return
-    turbidity = get_input("Turbidity (NTU): ", cast=float)
-    if turbidity == 'exit': return
-    bacteria = get_input("Bacteria count (CFU/mL): ", cast=int)
-    if bacteria == 'exit': return
+    level = levels[pred]
 
-    score = abs(7 - ph) + turbidity/5 + bacteria/100
-    level = classify(score, [('High',10),('Medium',5),('Low',0)])
+    history.append(("Fire", level))
+    show_result("Forest Fire", level, confidence, advice[pred])
 
-    advice_dict = {
-        'High': ["Unsafe to drink.", "Boil or filter before use."],
-        'Medium': ["Be cautious.", "Boil water if possible."],
-        'Low': ["Safe to drink.", "Good quality."]
-    }
 
-    show_result("Water", level, None, None, give_advice(level, advice_dict))
+def show_history():
+    print("\n--- Past Results ---")
 
-# ---------- Main Menu ----------
+    if not history:
+        print("No previous checks yet.")
+        return
+
+    for i, (system, level) in enumerate(history, 1):
+        print(f"{i}. {system} → {level}")
+
+
 def main():
-    print("=== SAFETY DETECTION CLI ===")
+    print("\n=====  Safety Analyzer  =====")
 
     while True:
-        print("\nSelect hazard to detect:")
-        print("1 - Threat")
-        print("2 - Forest Fire")
-        print("3 - Air Quality")
-        print("4 - Water")
-        print("5 - Exit")
+        print("\nWhat do you want to check?")
+        print("1. Threat Detection")
+        print("2. Forest Fire Risk")
+        print("3. Show History")
+        print("4. Exit")
 
-        choice = input("Enter choice (1-5): ").strip()
+        choice = input("Enter choice: ")
 
         if choice == '1':
-            threat_detection()
+            detect_threat()
         elif choice == '2':
-            forest_fire_detection()
+            detect_fire()
         elif choice == '3':
-            air_quality_detection()
+            show_history()
         elif choice == '4':
-            water_detection()
-        elif choice == '5' or choice.lower() == 'exit':
-            print("Exiting program. Stay safe!")
+            print("Exiting... stay safe 👍")
             break
         else:
-            print("Invalid choice. Try again.")
+            print("Invalid input, try again.")
+
 
 if __name__ == "__main__":
     main()
