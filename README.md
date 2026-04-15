@@ -63,8 +63,6 @@ Based on thresholds, it classifies risk into:
 ---
 ## OUTPUT 
 
-![WhatsApp Image 2026-03-26 at 8 11 03 PM](https://github.com/user-attachments/assets/4485520b-8277-4895-aa65-ab73b3e0df7a)
-
 
 
 
